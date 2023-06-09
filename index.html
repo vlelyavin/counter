@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+    <title>Clicker Game</title>
+    <style>
+      body {
+        font-family: "Roboto", sans-serif;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+      }
+
+      @media screen and (min-width: 420px) {
+        #container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          max-width: 500px;
+          width: 100%;
+          padding: 20px;
+        }
+
+        #best {
+          width: 150px;
+          height: 85px;
+          background: #847996;
+          font-size: 25px;
+          display: flex;
+          justify-content: center;
+          flex-direction: column;
+          color: white;
+          border-radius: 4px;
+        }
+
+        #cps {
+          width: 250px;
+          height: 85px;
+          background: #847996;
+          font-size: 25px;
+          display: flex;
+          justify-content: center;
+          flex-direction: column;
+          color: white;
+          border-radius: 4px;
+          margin-top: 25px;
+        }
+
+        #clicker {
+          width: 300px;
+          height: 300px;
+          border-radius: 100%;
+          font-size: 48px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background: #d0a98f;
+          cursor: pointer;
+          color: white;
+          user-select: none;
+        }
+
+        #timer {
+          margin-top: 20px;
+          margin-bottom: 20px;
+          font-size: 40px;
+        }
+
+        #restart {
+          background: #a7cab1;
+          border-radius: 6px;
+          color: white;
+          margin-top: 15px;
+          font-size: 25px;
+          width: 180px;
+          height: 50px;
+          opacity: 0;
+          pointer-events: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="best">
+        Best score<br />
+        0
+      </div>
+      <div id="timer">10</div>
+      <div id="clicker">Start</div>
+      <div id="restart">Try again</div>
+      <div id="cps">Clicks per second<br />0.0</div>
+    </div>
+
+    <script>
+      // JavaScript код для функціоналу гри
+      var clicker = document.getElementById("clicker");
+      var timer = document.getElementById("timer");
+      var title = document.getElementById("title");
+      var restart = document.getElementById("restart");
+      var best = document.getElementById("best");
+      var cps = document.getElementById("cps");
+
+      var score = 0;
+      var time = 5;
+      var intervalId;
+      var cpsIntervalId;
+      var bestScore = 0;
+      var startTime = 0;
+
+      var cpsTime = 0;
+
+      clicker.addEventListener("click", function () {
+        if (time > 0) {
+          score++;
+          clicker.textContent = score;
+        }
+      });
+
+      function startGame() {
+        restart.style.opacity = 0;
+        restart.style.pointerEvents = "none";
+
+        score = 0;
+        time = 5;
+        cpsTime = 0;
+        clicker.textContent = 0;
+        timer.textContent = time;
+        restart.removeEventListener("click", function () {
+          restart.style.opacity = 0;
+          restart.style.pointerEvents = "none";
+          clicker.textContent = "Start";
+          clicker.addEventListener("click", startGame);
+        });
+        clicker.removeEventListener("click", startGame);
+        cpsIntervalId = setInterval(function () {
+          cpsTime += 10;
+          if (cpsTime === 5000) {
+            clearInterval(cpsIntervalId);
+          }
+          cps.innerHTML = "Clicks per second<br/>" + (score / (cpsTime / 1000)).toFixed(1);
+        }, 10);
+        intervalId = setInterval(function () {
+          time--;
+          timer.textContent = time;
+
+          if (time === 0) {
+            clicker.textContent = score;
+            clearInterval(intervalId);
+            restart.style.opacity = 1;
+            restart.style.pointerEvents = "all";
+            restart.addEventListener("click", function () {
+              restart.style.opacity = 0;
+              restart.style.pointerEvents = "none";
+              clicker.textContent = "Start";
+              clicker.addEventListener("click", startGame);
+            });
+            if (score > bestScore) {
+              bestScore = score;
+              best.innerHTML = "Best score<br/>" + bestScore;
+            }
+          }
+        }, 1000);
+      }
+
+      clicker.addEventListener("click", startGame);
+    </script>
+  </body>
+</html>
